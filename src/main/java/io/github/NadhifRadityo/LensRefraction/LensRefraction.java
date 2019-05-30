@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -62,11 +61,12 @@ public class LensRefraction extends JFrame {
 		graphicManager.addModifier(new AntiAlias(true));
 		graphicManager.addModifier(new FontChanger(new Font("Segoe UI", Font.PLAIN, 20)));
 		graphicManager.addModifier(new CustomGraphicModifier() {
-			@Override public void draw(Graphics2D g) {
+			@Override public void draw(Graphics g) {
+				canvasPanel.setSize(getWidth(), getHeight());
 				g.setColor(FlatColor.Midnight_Blue.getColor());
-				g.fillRect(0, 0, getWidth(), getHeight());
+				g.fillRect(0, 0, canvasPanel.getWidth(), canvasPanel.getHeight());
 				g.setColor(FlatColor.Clouds.getColor());
-			} @Override public void reset(Graphics2D g) { }
+			} @Override public void reset(Graphics g) { }
 		}, -2);
 		canvasPanel.addManager(graphicManager);
 		drawRefraction();
@@ -114,13 +114,13 @@ public class LensRefraction extends JFrame {
 		lensGraphicManager.addSprite(lens);
 		lensGraphicManager.addSprite(lensText);
 		lensGraphicManager.addModifier(new FillSprite(true));
-		lensGraphicManager.addModifier(new CustomGraphicModifier() {
-			@Override public void draw(Graphics2D g) { g.setColor(lensColor); }
-			@Override public void reset(Graphics2D g) { g.setColor(FlatColor.Clouds.getColor()); }
+		lensGraphicManager.addModifier(new CustomGraphicModifier(lens) {
+			@Override public void draw(Graphics g) { g.setColor(lensColor); }
+			@Override public void reset(Graphics g) { g.setColor(FlatColor.Clouds.getColor()); }
 		}, 1);
 		lensGraphicManager.addModifier(new CustomGraphicModifier() {
-			@Override public void draw(Graphics2D g) { lensText.setPosition(lens.getX() + lens.getWidth() / 2 - lensText.getWidth() / 2, lens.getY() + lens.getHeight() + 10); }
-			@Override public void reset(Graphics2D g) { }
+			@Override public void draw(Graphics g) { lensText.setPosition(lens.getX() + lens.getWidth() / 2 - lensText.getWidth() / 2, lens.getY() + lens.getHeight() + 10); }
+			@Override public void reset(Graphics g) { }
 		});
 		lensGraphicManager.addModifier(new FontChanger(new Font("Segoe UI", Font.PLAIN, 14)));
 		canvasPanel.addManager(lensGraphicManager);
@@ -206,11 +206,11 @@ public class LensRefraction extends JFrame {
 		canvasPanel.addManager(mouseManager);
 		
 		KeyListenerManager keyManager = new KeyListenerManager(true);
-		keyManager.addListener(new CustomKeyListener(null, KeyEvent.VK_L) {
-			public void keyPressed(KeyEvent e) { System.out.println("Insert Lag"); insertLagValue = true; lensColor = FlatColor.Emerald.getColor(0.7f); };
-		});
 		keyManager.addListener(new CustomKeyListener(null, KeyEvent.VK_F) {
 			public void keyPressed(KeyEvent e) { System.out.println("Insert Fps"); insertFpsValue = true; lensColor = FlatColor.Emerald.getColor(0.7f); };
+		});
+		keyManager.addListener(new CustomKeyListener(null, KeyEvent.VK_L) {
+			public void keyPressed(KeyEvent e) { System.out.println("Insert Lag"); insertLagValue = true; lensColor = FlatColor.Emerald.getColor(0.7f); };
 		});
 		keyManager.addListener(new CustomKeyListener(null) {
 			String inputNumber = "";
